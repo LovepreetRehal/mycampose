@@ -1,8 +1,10 @@
 package com.example.mycompose
 
-
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -10,19 +12,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,9 +28,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mycompose.retrofit.PropertyDetailViewModel
 import com.example.mycompose.ui.theme.MyComposeTheme
 
 class LoginActivity : ComponentActivity() {
@@ -44,8 +41,12 @@ class LoginActivity : ComponentActivity() {
         setContent {
             MyComposeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting2(
-                        modifier = Modifier.padding(innerPadding)
+
+                    val viewModel: PropertyDetailViewModel =
+                        viewModel() // Get the ViewModel instance
+                    LoginScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        viewModel = viewModel
                     )
                 }
             }
@@ -54,18 +55,31 @@ class LoginActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting2( modifier: Modifier = Modifier) {
+fun LoginScreen(modifier: Modifier = Modifier, viewModel: PropertyDetailViewModel) {
     val context = LocalContext.current
-    val generalSemiBold = FontFamily(
-        Font(R.font.general_semi_bold)
-    )
+    val generalSemiBold = FontFamily(Font(R.font.general_semi_bold))
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val loginResponse = viewModel.loginResponse.value // Collect the login response state
+
+    // Handle login response
+    loginResponse?.let {
+        if (it.status) {
+            // Save the token in shared preferences
+            saveTokenToLocalStorage(context, it.data.token)
+
+            // Navigate to the next screen
+            Toast.makeText(context, "Login Successful!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(context, SignUpActivity::class.java) // Replace with your next activity
+            context.startActivity(intent)
+        } else {
+            Toast.makeText(context, "Login Failed: ${it.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Column(
         modifier = Modifier
             .padding(16.dp)
-//            .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(40.dp))
         Text(
@@ -76,72 +90,33 @@ fun Greeting2( modifier: Modifier = Modifier) {
         )
         Text(
             text = "Enter your information below or continue with your social account.",
-//            modifier = modifier.padding(top = 8.dp)
         )
         Spacer(modifier = Modifier.height(40.dp))
 
         // Email Section
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                painter = painterResource(id = R.mipmap.icon_email),
-                contentDescription = "Email Icon",
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Email", style = TextStyle(fontSize = 16.sp, color = Color.Black))
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        TextField(
+        LoginInputField(
+            icon = R.mipmap.icon_email,
+            label = "Email",
             value = email,
             onValueChange = { email = it },
-            placeholder = { Text("Email") },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFEDEDED),
-                unfocusedContainerColor = Color(0xFFEDEDED),
-                disabledContainerColor = Color(0xFFEDEDED),
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = Color(0xFFF9F9F9), shape = RoundedCornerShape(8.dp))
-                .height(56.dp)
-                .clip(RoundedCornerShape(8.dp))
+            placeholder = "Enter your email"
         )
-
 
         Spacer(modifier = Modifier.height(20.dp))
 
         // Password Section
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                painter = painterResource(id = R.mipmap.icon_password),
-                contentDescription = "Password Icon",
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Password", style = TextStyle(fontSize = 16.sp, color = Color.Black))
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        TextField(
+        LoginInputField(
+            icon = R.mipmap.icon_password,
+            label = "Password",
             value = password,
             onValueChange = { password = it },
-            placeholder = { Text("Enter your password") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFFF9F9F9), RoundedCornerShape(8.dp))
-                .height(56.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFEDEDED),
-                unfocusedContainerColor = Color(0xFFEDEDED),
-                disabledContainerColor = Color(0xFFEDEDED),
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
+            placeholder = "Enter your password",
+            isPassword = true
         )
-        Spacer(modifier = Modifier.height(8.dp))
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Forgot Password
         Text(
             text = "Forgot Password?",
             modifier = Modifier
@@ -173,8 +148,7 @@ fun Greeting2( modifier: Modifier = Modifier) {
                 .background(Color.Black, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
                 .clickable {
-                    val intent = Intent(context, SignUpActivity::class.java)
-                    context.startActivity(intent)
+                    viewModel.login(email, password)
                 },
             horizontalArrangement = Arrangement.Center
         ) {
@@ -186,11 +160,57 @@ fun Greeting2( modifier: Modifier = Modifier) {
     }
 }
 
-
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview2() {
-    MyComposeTheme {
-        Greeting2()
+fun LoginInputField(
+    icon: Int,
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    isPassword: Boolean = false
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = "$label Icon",
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = label, style = TextStyle(fontSize = 16.sp, color = Color.Black))
     }
+    Spacer(modifier = Modifier.height(8.dp))
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = { Text(placeholder) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFFF9F9F9), RoundedCornerShape(8.dp))
+            .height(56.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFFEDEDED),
+            unfocusedContainerColor = Color(0xFFEDEDED),
+            disabledContainerColor = Color(0xFFEDEDED),
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        )
+    )
 }
+
+fun saveTokenToLocalStorage(context: Context, token: String) {
+    val sharedPreferences = context.getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putString("auth_token", token)
+    editor.apply()
+}
+
+
+
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview2() {
+//    MyComposeTheme {
+//        Greeting2()
+//    }
+//}
