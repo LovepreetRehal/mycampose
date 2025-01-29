@@ -1,4 +1,4 @@
-package com.example.mycompose
+package com.example.mycompose.test
 
 import android.content.Context
 import android.content.Intent
@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mycompose.R
 import com.example.mycompose.retrofit.PropertyDetailViewModel
 import com.example.mycompose.ui.theme.MyComposeTheme
 
@@ -145,10 +146,14 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: PropertyDetailViewMode
         Image(
             painter = painterResource(id = R.mipmap.icon_google),
             contentDescription = "Google Icon",
+
             modifier = Modifier
                 .size(40.dp)
                 .align(Alignment.CenterHorizontally)
-                .clickable { /* Handle Google Sign-In */ }
+                .clickable {
+
+                    
+                }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -235,6 +240,6 @@ fun saveTokenToLocalStorage(context: Context, token: String) {
 //@Composable
 //fun GreetingPreview2() {
 //    MyComposeTheme {
-//        Greeting2()
+//        LoginInputField()
 //    }
 //}

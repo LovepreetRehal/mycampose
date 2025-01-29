@@ -1,13 +1,11 @@
-package com.example.mycompose
+package com.example.mycompose.test
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -42,6 +40,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.mycompose.R
+import com.example.mycompose.career.DashbaordScreen
 import com.example.mycompose.screen.HomeScreen
 import com.example.mycompose.ui.theme.MyComposeTheme
 
@@ -90,7 +90,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("home") { HomeScreen() }
-            composable("profile") { ProfileScreen() }
+            composable("profile") { DashbaordScreen() }
             composable("settings") { SettingsScreen() }
         }
     }

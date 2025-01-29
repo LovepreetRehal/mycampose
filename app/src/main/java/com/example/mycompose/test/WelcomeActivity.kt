@@ -1,4 +1,4 @@
-package com.example.mycompose
+package com.example.mycompose.test
 
 import android.content.Context
 import android.content.Intent
@@ -35,8 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mycompose.R
 import com.example.mycompose.ui.theme.MyComposeTheme
-import kotlin.math.round
 
 class WelcomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,10 +45,11 @@ class WelcomeActivity : ComponentActivity() {
         setContent {
             MyComposeTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting2(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+//                    Greeting2(
+//                        name = "Android",
+//                        modifier = Modifier.padding(innerPadding)
+//                    )
+                    NavHostApp()
                 }
             }
         }
@@ -125,10 +126,12 @@ fun Greeting2(name: String, modifier: Modifier = Modifier) {
 
                             val token = getTokenFromLocalStorage(context)
                             if (token.isNullOrEmpty()) {
-                                Toast.makeText(context, "No token found!", Toast.LENGTH_SHORT).show()
-                                context.startActivity(Intent(context,LoginActivity::class.java))
+                                Toast
+                                    .makeText(context, "No token found!", Toast.LENGTH_SHORT)
+                                    .show()
+                                context.startActivity(Intent(context, MainActivity2::class.java))
                             } else {
-                                context.startActivity(Intent(context,DashboardActivity::class.java))
+                                context.startActivity(Intent(context, MainActivity2::class.java))
                                 // Navigate to the next screen or perform an action
                             }
                         },
@@ -149,10 +152,17 @@ fun Greeting2(name: String, modifier: Modifier = Modifier) {
 
                             val token = getTokenFromLocalStorage(context)
                             if (token.isNullOrEmpty()) {
-                                Toast.makeText(context, "No token found!", Toast.LENGTH_SHORT).show()
-                                context.startActivity(Intent(context,LoginActivity::class.java))
+                                Toast
+                                    .makeText(context, "No token found!", Toast.LENGTH_SHORT)
+                                    .show()
+                                context.startActivity(Intent(context, LoginActivity::class.java))
                             } else {
-                                context.startActivity(Intent(context,DashboardActivity::class.java))
+                                context.startActivity(
+                                    Intent(
+                                        context,
+                                        DashboardActivity::class.java
+                                    )
+                                )
                                 // Navigate to the next screen or perform an action
                             }
                         },

@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    kotlin("plugin.serialization") version "1.9.0" // Match with your Kotlin version
+
 }
 
 android {
@@ -50,7 +52,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -72,6 +73,10 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("io.coil-kt:coil-compose:2.1.0") // Coil for Compose
 
+//    val nav_version = "2.8.5"
+//    implementation("androidx.navigation:navigation-compose:$nav_version")
+//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1") // Use the latest version
 
 }
